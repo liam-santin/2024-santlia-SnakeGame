@@ -8,8 +8,14 @@ import android.util.AttributeSet;
 import android.view.View;
 
 public class CustomGridView extends View {
-    private static final int NUM_COLUMNS = 6;
-    private static final int NUM_ROWS = 16;
+    private static final int NUM_COLUMNS = 14;
+    private static final int NUM_ROWS = 6;
+
+    // Largeur et hauteur du cadrillage
+    private int width = getWidth();
+    private int height = getHeight();
+    private int cellWidth = width / NUM_COLUMNS;
+    private int cellHeight = height / NUM_ROWS;
 
     private Paint gridPaint;
 
@@ -21,6 +27,22 @@ public class CustomGridView extends View {
     public CustomGridView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
+    }
+
+    /***
+     * Getter qui retourne la largeur de la cellule
+     * @return Int, largeur de la cellule
+     */
+    public int getCellWidth() {
+        return cellWidth;
+    }
+
+    /***
+     * Getter qui retourne la hauteur de la cellule
+     * @return Int, la hauteur de la cellule
+     */
+    public int getCellHeight() {
+        return cellHeight;
     }
 
     private void init() {
@@ -39,9 +61,8 @@ public class CustomGridView extends View {
         int width = getWidth();
         int height = getHeight();
 
-        // Largeur et hauteur d'une cellule de la grille
-        int cellWidth = width / NUM_COLUMNS;
-        int cellHeight = height / NUM_ROWS;
+        System.out.println("Cell height" + cellHeight);
+        System.out.println("Celle width" + cellWidth);
 
         // Dessiner les lignes verticales
         for (int col = 1; col < NUM_COLUMNS; col++) {
