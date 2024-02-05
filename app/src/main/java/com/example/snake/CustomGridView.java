@@ -12,10 +12,10 @@ public class CustomGridView extends View {
     private static final int NUM_ROWS = 6;
 
     // Largeur et hauteur du cadrillage
-    private int width = getWidth();
-    private int height = getHeight();
-    private int cellWidth = width / NUM_COLUMNS;
-    private int cellHeight = height / NUM_ROWS;
+    private int width;
+    private int height;
+    private int cellWidth;
+    private int cellHeight;
 
     private Paint gridPaint;
 
@@ -60,6 +60,10 @@ public class CustomGridView extends View {
         // Largeur et hauteur de la vue
         int width = getWidth();
         int height = getHeight();
+
+        // Largeur et hauteur d'une cellule de la grille
+        int cellWidth = width / NUM_COLUMNS;
+        int cellHeight = height / NUM_ROWS;
 
         System.out.println("Cell height" + cellHeight);
         System.out.println("Celle width" + cellWidth);
