@@ -17,6 +17,7 @@ import android.widget.RelativeLayout;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 
 /**
  * Cadrillage du jeu snake 6 lignes et 14 colonnes
@@ -38,12 +39,17 @@ import java.lang.reflect.Array;
  *  La hauteur d'une cellule est 120dp --> axe Y --> variable marginTop
  *  La largeur d'une cellule est 100dp --> axe X --> variable marginLeft
  *
+ *
  */
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
     // Constante
-    private final int HAUTEUR_CELL = 100;
-    private final int LARGEUR_CELL = 120;
+    private final static int GAME_WIDTH = 1420;
+    private final static int GAME_HEIGHT = 680;
+    private final int HAUTEUR_CELL = GAME_WIDTH / 14;
+    private final int LARGEUR_CELL = GAME_HEIGHT / 6;
+    private final int NBR_COLUMN = 14;
+    private final int NBR_ROW = 6;
     private final int MAX_HEIGHT = 6 * 100;
     private final int MAX_WIDTH = 1300;
     private final double SENSIBILITY_SENSOR = 5;
@@ -67,9 +73,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private CustomGridView customGridView;
 
     // Position X
-    private int[] posAxeY = {0,120,240,360,480,600,720};
+    ArrayList<Integer> listPosX = new ArrayList<>();
     // Position Y
-    private int[] posAxeX = {0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300};
+    ArrayList<Integer> listPosY = new ArrayList<>();
 
     // Déplacer l'ImageView de 200 pixels sur l'axe x
     RelativeLayout.LayoutParams layoutParams;
@@ -91,23 +97,39 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         System.out.println("-----------------------------------------------------------------------------------");
 
+        // Récupère les valeurs
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         gravitySensor = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
         snakeImage = findViewById(R.id.snakeImg);
         layoutParams = (RelativeLayout.LayoutParams) snakeImage.getLayoutParams();
         pommeImage = findViewById(R.id.pommeImg);
-        customGridView = new CustomGridView(this);
 
-        // Taille de l'écran 1406x720
-        WindowManager windowManager = (WindowManager) this.getSystemService(Context.WINDOW_SERVICE);
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        windowManager.getDefaultDisplay().getMetrics(displayMetrics);
-        int screenWidth = ScreenUtils.getScreenWidth(getApplicationContext());
-        int screenHeight = ScreenUtils.getScreenHeight(getApplicationContext());
+        // Taille de l'écran 1420x680
+
+        // Ajout des positions de l'axe X dans un tableau
+        for (int i = 0; i < NBR_COLUMN; i++) {
+            listPosX.add(HAUTEUR_CELL * i);
+        }
+        for (int i = 0; i < NBR_ROW; i++) {
+            listPosY.add(LARGEUR_CELL * i);
+        }
+
+        System.out.println(listPosX);
+        System.out.println(listPosY);
+
+        int cellWidth = GAME_WIDTH / 14;
+        int cellHeight = GAME_HEIGHT / 6;
+        System.out.println(cellWidth);
+        System.out.println(cellHeight);
 
         // Position de la pomme
-        pommeImage.setX(100);
-        pommeImage.setY(100);
+        pommeImage.setX(cellWidth * 3);
+        pommeImage.setY(GAME_HEIGHT / 3);
+        // Position de la tete
+        snakeImage.setX(10);
+        snakeImage.setY(10);
+
+        customGridView = new CustomGridView(this);
 
         // Initialisation du handler
         handler = new Handler();

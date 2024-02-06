@@ -8,14 +8,13 @@ import android.util.AttributeSet;
 import android.view.View;
 
 public class CustomGridView extends View {
-    private static final int NUM_COLUMNS = 14;
-    private static final int NUM_ROWS = 6;
+    private static final int NBR_COLUMNS = 14;
+    private static final int NBR_ROWS = 6;
+
 
     // Largeur et hauteur du cadrillage
-    private int width;
-    private int height;
-    private int cellWidth;
-    private int cellHeight;
+    private int width = 1420;
+    private int height = 680;
 
     private Paint gridPaint;
 
@@ -27,22 +26,6 @@ public class CustomGridView extends View {
     public CustomGridView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
-    }
-
-    /***
-     * Getter qui retourne la largeur de la cellule
-     * @return Int, largeur de la cellule
-     */
-    public int getCellWidth() {
-        return cellWidth;
-    }
-
-    /***
-     * Getter qui retourne la hauteur de la cellule
-     * @return Int, la hauteur de la cellule
-     */
-    public int getCellHeight() {
-        return cellHeight;
     }
 
     private void init() {
@@ -57,25 +40,17 @@ public class CustomGridView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        // Largeur et hauteur de la vue
-        int width = getWidth();
-        int height = getHeight();
-
-        // Largeur et hauteur d'une cellule de la grille
-        int cellWidth = width / NUM_COLUMNS;
-        int cellHeight = height / NUM_ROWS;
-
-        System.out.println("Cell height" + cellHeight);
-        System.out.println("Celle width" + cellWidth);
+        int cellWidth = width / NBR_COLUMNS;
+        int cellHeight = height / NBR_ROWS;
 
         // Dessiner les lignes verticales
-        for (int col = 1; col < NUM_COLUMNS; col++) {
+        for (int col = 1; col < NBR_COLUMNS; col++) {
             int x = col * cellWidth;
             canvas.drawLine(x, 0, x, height, gridPaint);
         }
 
         // Dessiner les lignes horizontales
-        for (int row = 1; row < NUM_ROWS; row++) {
+        for (int row = 1; row < NBR_ROWS; row++) {
             int y = row * cellHeight;
             canvas.drawLine(0, y, width, y, gridPaint);
         }
