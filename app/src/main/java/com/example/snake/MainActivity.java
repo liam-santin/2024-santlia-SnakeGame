@@ -7,10 +7,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.DisplayMetrics;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -18,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Cadrillage du jeu snake 6 lignes et 14 colonnes
@@ -81,19 +79,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     RelativeLayout.LayoutParams layoutParams;
 
     // Empêchement de revenir sur lui meme
-    private enum DeplacementPreced {
-        HAUT,
-        BAS,
-        GAUCHE,
-        DROITE
-    }
 
     public enum Direction {
         HAUT, BAS, GAUCHE, DROITE
     }
 
 
-    DeplacementPreced deplacementPreced = DeplacementPreced.DROITE;
+    Direction deplacementPreced = Direction.DROITE;
 
     ArrayList<Integer> list = new ArrayList<>();
 
@@ -146,6 +138,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 System.out.println("Pomme - X:" + pommeImage.getX() + " | Y:" + pommeImage.getY());
                 System.out.println("Snake - X:" + snakeImage.getX() + " | Y:" + snakeImage.getY());
 
+
                 moveSnake();
                 handler.postDelayed(this, VITESSE_SNAKE);
             }
@@ -196,7 +189,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 float yGravity = event.values[1];
 
                 // Déplacement vers le bas
-                if (xGravity > SENSIBILITY_SENSOR && deplacementPreced != DeplacementPreced.HAUT) {
+                if (xGravity > SENSIBILITY_SENSOR && deplacementPreced != Direction.HAUT) {
                     droite = false;
                     bas = true;
                     haut = false;
@@ -204,7 +197,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     System.out.println(deplacementPreced);
 
                     // haut
-                } else if (xGravity < -SENSIBILITY_SENSOR && deplacementPreced != DeplacementPreced.BAS){
+                } else if (xGravity < -SENSIBILITY_SENSOR && deplacementPreced != Direction.BAS){
                     System.out.println(deplacementPreced);
                     droite = false;
                     bas = false;
@@ -214,7 +207,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 }
 
                 // Déplacement vers la gauche
-                if (yGravity > SENSIBILITY_SENSOR && deplacementPreced != DeplacementPreced.GAUCHE) {
+                if (yGravity > SENSIBILITY_SENSOR && deplacementPreced != Direction.GAUCHE) {
                     System.out.println(deplacementPreced);
                     droite = true;
                     bas = false;
@@ -222,7 +215,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     gauche = false;
 
                     // droite
-                } else if (yGravity < -SENSIBILITY_SENSOR && deplacementPreced != DeplacementPreced.DROITE) {
+                } else if (yGravity < -SENSIBILITY_SENSOR && deplacementPreced != Direction.DROITE) {
                     System.out.println(deplacementPreced);
                     droite = false;
                     bas = false;
@@ -267,7 +260,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
      * passé en paramètre
      * @param direction ENUM, direction haut,bas,gauche et droite
      */
-    public void deplacement(Direction direction) {
+    public void changerOrientationSerpent(Direction direction) {
         int deplacementTop = 0;
         int deplacementLeft = 0;
 
@@ -293,42 +286,66 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         snakeImage.setLayoutParams(layoutParams);
     }
 
+    /***
+     * Fonction qui génère un tableau de position aléatoire
+     * @return Array, un tableau de position aléatoire
+     */
+    public ArrayList<Integer> genereRandomPos() {
+        ArrayList<Integer> posAleatoire = new ArrayList<>();
 
-    public void mangerPomme() {
-        // Si les marges left et top du serpent sont les meme que les
-        // marges de la pommes alors
+        Random random = new Random();
+        // Génère la position x aléatoire
+        int indexRandomPosX = random.nextInt(listPosX.size());
+        int posXRandom = listPosX.get(indexRandomPosX);
+        posAleatoire.add(posXRandom);
 
+        // Génère la position y aléatoire
+        int indexRandomPosY = random.nextInt(listPosY.size());
+        int posYRandom = listPosY.get(indexRandomPosY);
+        posAleatoire.add(posYRandom);
+
+        return posAleatoire;
     }
+
+    /***
+     * Fonction qui permet de détecter si le serpent passe sur la pomme,
+     * ce qui fait qu'il la manger et ensuite supprimer cette pomme
+     */
+    public void mangerPomme() {
+        // Si le serpent est dessus la pomme
+        if ((pommeImage.getY() == snakeImage.getY()) && (pommeImage.getX() == snakeImage.getX())){
+                System.out.println("meme case");
+                // pommeImage.setVisibility(View.INVISIBLE);
+
+                ArrayList<Integer> randomPos = genereRandomPos();
+                pommeImage.setX(randomPos.get(0));
+                pommeImage.setY(randomPos.get(1));
+
+            }
+        }
 
     /**
      * Fonction de déplacement du serpent
      */
     public void moveSnake() {
 
+        mangerPomme();
+
         if (bas) {
-            deplacement(Direction.BAS);
-            deplacementPreced = DeplacementPreced.BAS;
+            changerOrientationSerpent(Direction.BAS);
+            deplacementPreced = Direction.BAS;
 
         } else if (haut) {
-            deplacement(Direction.HAUT);
-            deplacementPreced = DeplacementPreced.HAUT;
+            changerOrientationSerpent(Direction.HAUT);
+            deplacementPreced = Direction.HAUT;
 
         } else if (gauche) {
-            deplacement(Direction.GAUCHE);
-            deplacementPreced = DeplacementPreced.GAUCHE;
+            changerOrientationSerpent(Direction.GAUCHE);
+            deplacementPreced = Direction.GAUCHE;
 
         } else if (droite) {
-            deplacement(Direction.DROITE);
-            deplacementPreced = DeplacementPreced.DROITE;
-        }
-
-        // Test si le serpent est dessus la pomme
-        if (pommeImage.getY() == snakeImage.getY()){
-            System.out.println("meme ligne");
-            if (pommeImage.getX() == pommeImage.getX()){
-                System.out.println("meme case");
-
-            }
+            changerOrientationSerpent(Direction.DROITE);
+            deplacementPreced = Direction.DROITE;
         }
 
     }
