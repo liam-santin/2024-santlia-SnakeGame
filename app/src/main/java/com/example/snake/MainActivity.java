@@ -39,7 +39,7 @@ import java.util.ArrayList;
  *  La hauteur d'une cellule est 120dp --> axe Y --> variable marginTop
  *  La largeur d'une cellule est 100dp --> axe X --> variable marginLeft
  *
- *
+ *  Taille de l'écran 1420x680
  */
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
@@ -87,7 +87,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         GAUCHE,
         DROITE
     }
+
+    public enum Direction {
+        HAUT, BAS, GAUCHE, DROITE
+    }
+
+
     DeplacementPreced deplacementPreced = DeplacementPreced.DROITE;
+
+    ArrayList<Integer> list = new ArrayList<>();
 
 
     @Override
@@ -97,14 +105,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         System.out.println("-----------------------------------------------------------------------------------");
 
+
         // Récupère les valeurs
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         gravitySensor = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
         snakeImage = findViewById(R.id.snakeImg);
         layoutParams = (RelativeLayout.LayoutParams) snakeImage.getLayoutParams();
         pommeImage = findViewById(R.id.pommeImg);
-
-        // Taille de l'écran 1420x680
 
         // Ajout des positions de l'axe X dans un tableau
         for (int i = 0; i < NBR_COLUMN; i++) {
@@ -114,20 +121,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             listPosY.add(LARGEUR_CELL * i);
         }
 
+
         System.out.println(listPosX);
         System.out.println(listPosY);
 
         int cellWidth = GAME_WIDTH / 14;
         int cellHeight = GAME_HEIGHT / 6;
-        System.out.println(cellWidth);
-        System.out.println(cellHeight);
 
         // Position de la pomme
         pommeImage.setX(cellWidth * 3);
-        pommeImage.setY(GAME_HEIGHT / 3);
+        pommeImage.setY(cellHeight * 3);
         // Position de la tete
-        snakeImage.setX(10);
-        snakeImage.setY(10);
+//        snakeImage.setX(10);
+//        snakeImage.setY(10);
 
         customGridView = new CustomGridView(this);
 
@@ -136,6 +142,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         runnable = new Runnable() {
             @Override
             public void run() {
+
+                System.out.println("Pomme - X:" + pommeImage.getX() + " | Y:" + pommeImage.getY());
+                System.out.println("Snake - X:" + snakeImage.getX() + " | Y:" + snakeImage.getY());
+
                 moveSnake();
                 handler.postDelayed(this, VITESSE_SNAKE);
             }
@@ -252,30 +262,42 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         return false;
     }
 
-    public void deplacementVersBas() {
-        marginTop += LARGEUR_CELL;
-        System.out.println(marginTop);
-        layoutParams.topMargin = marginTop;
-        snakeImage.setLayoutParams(layoutParams);
-    }
+    /**
+     * Fonction qui permet de changer l'orientation du serpent selon l'ENUM
+     * passé en paramètre
+     * @param direction ENUM, direction haut,bas,gauche et droite
+     */
+    public void deplacement(Direction direction) {
+        int deplacementTop = 0;
+        int deplacementLeft = 0;
 
-    public void deplacementVersDroite() {
-        marginLeft += HAUTEUR_CELL;
-        System.out.println(marginLeft);
+        switch (direction) {
+            case HAUT:
+                deplacementTop = -LARGEUR_CELL;
+                break;
+            case BAS:
+                deplacementTop = LARGEUR_CELL;
+                break;
+            case GAUCHE:
+                deplacementLeft = -HAUTEUR_CELL;
+                break;
+            case DROITE:
+                deplacementLeft = HAUTEUR_CELL;
+                break;
+        }
+
+        marginTop += deplacementTop;
+        marginLeft += deplacementLeft;
+        layoutParams.topMargin = marginTop;
         layoutParams.leftMargin = marginLeft;
         snakeImage.setLayoutParams(layoutParams);
     }
 
-    public void deplacementVersGauche() {
-        marginLeft -= HAUTEUR_CELL;
-        layoutParams.leftMargin = marginLeft;
-        snakeImage.setLayoutParams(layoutParams);
-    }
 
-    public void deplacementVersHaut() {
-        marginTop -= LARGEUR_CELL;
-        layoutParams.topMargin = marginTop;
-        snakeImage.setLayoutParams(layoutParams);
+    public void mangerPomme() {
+        // Si les marges left et top du serpent sont les meme que les
+        // marges de la pommes alors
+
     }
 
     /**
@@ -283,26 +305,31 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
      */
     public void moveSnake() {
 
-
         if (bas) {
-            deplacementVersBas();
+            deplacement(Direction.BAS);
             deplacementPreced = DeplacementPreced.BAS;
 
         } else if (haut) {
-            deplacementVersHaut();
+            deplacement(Direction.HAUT);
             deplacementPreced = DeplacementPreced.HAUT;
 
         } else if (gauche) {
-            deplacementVersGauche();
+            deplacement(Direction.GAUCHE);
             deplacementPreced = DeplacementPreced.GAUCHE;
 
         } else if (droite) {
-            deplacementVersDroite();
+            deplacement(Direction.DROITE);
             deplacementPreced = DeplacementPreced.DROITE;
         }
 
-        int cellWidth = 100;
-        System.out.println(cellWidth);
+        // Test si le serpent est dessus la pomme
+        if (pommeImage.getY() == snakeImage.getY()){
+            System.out.println("meme ligne");
+            if (pommeImage.getX() == pommeImage.getX()){
+                System.out.println("meme case");
+
+            }
+        }
 
     }
 
