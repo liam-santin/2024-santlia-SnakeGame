@@ -7,8 +7,10 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -50,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private final int NBR_ROW = 6;
     private final int MAX_HEIGHT = 6 * 100;
     private final int MAX_WIDTH = 1300;
-    private final double SENSIBILITY_SENSOR = 5;
+    private final double SENSIBILITY_SENSOR = 3;
     private final int VITESSE_SNAKE = 350 ;
 
     // Déplacement
@@ -113,7 +115,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             listPosY.add(LARGEUR_CELL * i);
         }
 
-
         System.out.println(listPosX);
         System.out.println(listPosY);
 
@@ -128,6 +129,24 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 //        snakeImage.setY(10);
 
         customGridView = new CustomGridView(this);
+
+        System.out.println(snakeImage.getHeight());
+        System.out.println(snakeImage.getWidth());
+
+        /*
+        // Corps du serpent
+        ImageView corpsSnake = new ImageView(this);
+        corpsSnake.setImageResource(R.drawable.snake_img);
+        corpsSnake.setAdjustViewBounds(true);
+
+
+        corpsSnake.setMaxHeight(convertDpToPx(this,40));
+        corpsSnake.setMaxWidth(convertDpToPx(this,40));
+        corpsSnake.setMinimumWidth(convertDpToPx(this,40));
+        corpsSnake.setMinimumHeight(convertDpToPx(this,40));
+        RelativeLayout containerLayout = findViewById(R.id.idLayout);
+        containerLayout.addView(corpsSnake);
+        */
 
         // Initialisation du handler
         handler = new Handler();
@@ -235,6 +254,17 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     /***
+     * Fonction qui permet de convertir une valeur "dp" en pixel
+     * @param context This
+     * @param dp Int, Valeur à convertir en pixel
+     * @return Int, la valeur convertie en pixel
+     */
+    public static int convertDpToPx(Context context, int dp) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());
+    }
+
+
+    /***
      * Fonction qui permet de tester si le serpent est en bord de scene
      * ou non
      * @param marginLeft Int, Marge de gauche (axe x)
@@ -314,15 +344,40 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void mangerPomme() {
         // Si le serpent est dessus la pomme
         if ((pommeImage.getY() == snakeImage.getY()) && (pommeImage.getX() == snakeImage.getX())){
-                System.out.println("meme case");
-                // pommeImage.setVisibility(View.INVISIBLE);
+            System.out.println("Pomme mangée");
 
-                ArrayList<Integer> randomPos = genereRandomPos();
-                pommeImage.setX(randomPos.get(0));
-                pommeImage.setY(randomPos.get(1));
+            // Position aléatoire de la pomme
+            ArrayList<Integer> randomPos = genereRandomPos();
+            pommeImage.setX(randomPos.get(0));
+            pommeImage.setY(randomPos.get(1));
 
-            }
+            // Ajout d'un corps de serpent
+            ajouterCorps((int)snakeImage.getX(), (int)snakeImage.getY());
+
         }
+    }
+
+
+    /***
+     * Fonction qui ajoute un corps au serpent (ImageView)
+     * @param x Int, position X du corps à suivre
+     * @param y Int, position Y du corps à suivre
+     */
+    public void ajouterCorps(int x, int y) {
+        ImageView corps = new ImageView(this);
+        corps.setImageResource(R.drawable.snake_img);
+        corps.setAdjustViewBounds(true);
+        corps.setMaxHeight(convertDpToPx(this,40));
+        corps.setMaxWidth(convertDpToPx(this,40));
+        corps.setMinimumWidth(convertDpToPx(this,40));
+        corps.setMinimumHeight(convertDpToPx(this,40));
+        RelativeLayout containerLayout = findViewById(R.id.idLayout);
+        containerLayout.addView(corps);
+
+        corps.setX(x);
+        corps.setY(y);
+
+    }
 
     /**
      * Fonction de déplacement du serpent
