@@ -8,14 +8,11 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.TypedValue;
-import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -36,8 +33,8 @@ import java.util.Random;
  * ---------------------------------------------------------|
  *                      Axe X
  *
- *  La hauteur d'une cellule est 120dp --> axe Y --> variable marginTop
- *  La largeur d'une cellule est 100dp --> axe X --> variable marginLeft
+ *  Liste de position X : [0, 101, 202, 303, 404, 505, 606, 707, 808, 909, 1010, 1111, 1212, 1313]
+ *  Liste de position Y : [0, 113, 226, 339, 452, 565]
  *
  *  Taille de l'écran 1420x680
  */
@@ -51,22 +48,23 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private final int NBR_COLUMN = 14;
     private final int NBR_ROW = 6;
     private final int MAX_HEIGHT = 6 * 100;
-    private final int MAX_WIDTH = 1300;
+    private final int MAX_WIDTH = 1313;
     private final double SENSIBILITY_SENSOR = 3;
-    private final int VITESSE_SNAKE = 350 ;
 
     // Déplacement
+    private int VITESSE_SNAKE = 350 ;
     private int marginLeft = 0;
     private int marginTop = 0;
-    private boolean haut = false;
-    private boolean bas = false;
-    private boolean gauche = false;
-    private boolean droite = true;
+    public enum Direction {
+        HAUT, BAS, GAUCHE, DROITE
+    }
+    Direction directionActuel = Direction.DROITE;
+    Direction deplacementPreced = Direction.DROITE;
 
     // Objet
     private Handler handler;
     private Runnable runnable;
-    private ImageView snakeImage;
+    private ImageView snakeHeadImg;
     private ImageView pommeImage;
     private SensorManager sensorManager;
     private Sensor gravitySensor;
@@ -77,19 +75,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     // Position Y
     ArrayList<Integer> listPosY = new ArrayList<>();
 
+    /** SERPENT **/
+    // Liste de corps de serpent
+    ArrayList<ImageView> listBodySnake = new ArrayList<>();
+    // Position X et Y du dernier corps à suivre
+    ArrayList<ArrayList<Integer>> listAncienPos = new ArrayList<>();
+    // Définit la taille du serpent, au debut à 1 car il y a la tête
+    int sizeSnake = 1;
+
     // Déplacer l'ImageView de 200 pixels sur l'axe x
     RelativeLayout.LayoutParams layoutParams;
-
-    // Empêchement de revenir sur lui meme
-
-    public enum Direction {
-        HAUT, BAS, GAUCHE, DROITE
-    }
-
-
-    Direction deplacementPreced = Direction.DROITE;
-
-    ArrayList<Integer> list = new ArrayList<>();
 
 
     @Override
@@ -103,8 +98,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         // Récupère les valeurs
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         gravitySensor = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
-        snakeImage = findViewById(R.id.snakeImg);
-        layoutParams = (RelativeLayout.LayoutParams) snakeImage.getLayoutParams();
+        snakeHeadImg = findViewById(R.id.snakeImg);
+        layoutParams = (RelativeLayout.LayoutParams) snakeHeadImg.getLayoutParams();
         pommeImage = findViewById(R.id.pommeImg);
 
         // Ajout des positions de l'axe X dans un tableau
@@ -115,38 +110,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             listPosY.add(LARGEUR_CELL * i);
         }
 
-        System.out.println(listPosX);
-        System.out.println(listPosY);
-
+        // Position de la pomme
         int cellWidth = GAME_WIDTH / 14;
         int cellHeight = GAME_HEIGHT / 6;
-
-        // Position de la pomme
         pommeImage.setX(cellWidth * 3);
         pommeImage.setY(cellHeight * 3);
-        // Position de la tete
-//        snakeImage.setX(10);
-//        snakeImage.setY(10);
 
         customGridView = new CustomGridView(this);
 
-        System.out.println(snakeImage.getHeight());
-        System.out.println(snakeImage.getWidth());
-
-        /*
-        // Corps du serpent
-        ImageView corpsSnake = new ImageView(this);
-        corpsSnake.setImageResource(R.drawable.snake_img);
-        corpsSnake.setAdjustViewBounds(true);
-
-
-        corpsSnake.setMaxHeight(convertDpToPx(this,40));
-        corpsSnake.setMaxWidth(convertDpToPx(this,40));
-        corpsSnake.setMinimumWidth(convertDpToPx(this,40));
-        corpsSnake.setMinimumHeight(convertDpToPx(this,40));
-        RelativeLayout containerLayout = findViewById(R.id.idLayout);
-        containerLayout.addView(corpsSnake);
-        */
+        listBodySnake.add(snakeHeadImg);
 
         // Initialisation du handler
         handler = new Handler();
@@ -154,11 +126,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             @Override
             public void run() {
 
-                System.out.println("Pomme - X:" + pommeImage.getX() + " | Y:" + pommeImage.getY());
-                System.out.println("Snake - X:" + snakeImage.getX() + " | Y:" + snakeImage.getY());
-
+                ancienPos();
 
                 moveSnake();
+                mangerPomme();
+
+                System.out.println("Pomme - X:" + pommeImage.getX() + " | Y:" + pommeImage.getY());
+                System.out.println("Snake - X:" + snakeHeadImg.getX() + " | Y:" + snakeHeadImg.getY());
+
+
                 handler.postDelayed(this, VITESSE_SNAKE);
             }
         };
@@ -198,9 +174,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     @Override
     public void onSensorChanged(SensorEvent event) {
 
-        System.out.println("Margin top : " + marginTop);
-        System.out.println("Margin left : " + marginLeft);
-
         if (testCollisionBord(marginLeft, marginTop)){
             if (event.sensor.getType() == Sensor.TYPE_GRAVITY) {
                 // Handle gravity sensor data changes
@@ -209,37 +182,21 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
                 // Déplacement vers le bas
                 if (xGravity > SENSIBILITY_SENSOR && deplacementPreced != Direction.HAUT) {
-                    droite = false;
-                    bas = true;
-                    haut = false;
-                    gauche = false;
-                    System.out.println(deplacementPreced);
+                    directionActuel = Direction.BAS;
 
                     // haut
                 } else if (xGravity < -SENSIBILITY_SENSOR && deplacementPreced != Direction.BAS){
-                    System.out.println(deplacementPreced);
-                    droite = false;
-                    bas = false;
-                    haut = true;
-                    gauche = false;
+                    directionActuel = Direction.HAUT;
 
                 }
 
                 // Déplacement vers la gauche
                 if (yGravity > SENSIBILITY_SENSOR && deplacementPreced != Direction.GAUCHE) {
-                    System.out.println(deplacementPreced);
-                    droite = true;
-                    bas = false;
-                    haut = false;
-                    gauche = false;
+                    directionActuel = Direction.DROITE;
 
                     // droite
                 } else if (yGravity < -SENSIBILITY_SENSOR && deplacementPreced != Direction.DROITE) {
-                    System.out.println(deplacementPreced);
-                    droite = false;
-                    bas = false;
-                    haut = false;
-                    gauche = true;
+                    directionActuel = Direction.GAUCHE;
 
                 }
             }
@@ -313,7 +270,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         marginLeft += deplacementLeft;
         layoutParams.topMargin = marginTop;
         layoutParams.leftMargin = marginLeft;
-        snakeImage.setLayoutParams(layoutParams);
+        snakeHeadImg.setLayoutParams(layoutParams);
     }
 
     /***
@@ -324,15 +281,20 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         ArrayList<Integer> posAleatoire = new ArrayList<>();
 
         Random random = new Random();
-        // Génère la position x aléatoire
-        int indexRandomPosX = random.nextInt(listPosX.size());
-        int posXRandom = listPosX.get(indexRandomPosX);
-        posAleatoire.add(posXRandom);
 
-        // Génère la position y aléatoire
-        int indexRandomPosY = random.nextInt(listPosY.size());
-        int posYRandom = listPosY.get(indexRandomPosY);
-        posAleatoire.add(posYRandom);
+        // Génération alétoire de la position X
+        int randomPosX = 0;
+        do {
+            randomPosX = listPosX.get(random.nextInt(listPosX.size()));
+        } while(!listPosX.contains(randomPosX));
+        posAleatoire.add(randomPosX);
+
+        // Génération aléatoire de la position Y
+        int randomPosY = 0;
+        do {
+            randomPosY = listPosY.get(random.nextInt(listPosY.size()));
+        } while(!listPosY.contains(randomPosY));
+        posAleatoire.add(randomPosY);
 
         return posAleatoire;
     }
@@ -343,16 +305,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
      */
     public void mangerPomme() {
         // Si le serpent est dessus la pomme
-        if ((pommeImage.getY() == snakeImage.getY()) && (pommeImage.getX() == snakeImage.getX())){
+        if ((pommeImage.getY() == snakeHeadImg.getY()) && (pommeImage.getX() == snakeHeadImg.getX())){
             System.out.println("Pomme mangée");
+
+            // Ajout d'un corps de serpent
+            ajouterCorps();
 
             // Position aléatoire de la pomme
             ArrayList<Integer> randomPos = genereRandomPos();
             pommeImage.setX(randomPos.get(0));
             pommeImage.setY(randomPos.get(1));
 
-            // Ajout d'un corps de serpent
-            ajouterCorps((int)snakeImage.getX(), (int)snakeImage.getY());
+            // Augmente la vitesse du serpent
+            VITESSE_SNAKE -= 10;
 
         }
     }
@@ -363,46 +328,86 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
      * @param x Int, position X du corps à suivre
      * @param y Int, position Y du corps à suivre
      */
-    public void ajouterCorps(int x, int y) {
+    public void ajouterCorps() {
+        sizeSnake++;
+
         ImageView corps = new ImageView(this);
+        // Set les propriétés de l'image
         corps.setImageResource(R.drawable.snake_img);
         corps.setAdjustViewBounds(true);
-        corps.setMaxHeight(convertDpToPx(this,40));
-        corps.setMaxWidth(convertDpToPx(this,40));
-        corps.setMinimumWidth(convertDpToPx(this,40));
-        corps.setMinimumHeight(convertDpToPx(this,40));
+        corps.setMaxHeight(convertDpToPx(this, 40));
+        corps.setMaxWidth(convertDpToPx(this, 40));
+        corps.setMinimumWidth(convertDpToPx(this, 40));
+        corps.setMinimumHeight(convertDpToPx(this, 40));
         RelativeLayout containerLayout = findViewById(R.id.idLayout);
         containerLayout.addView(corps);
 
-        corps.setX(x);
-        corps.setY(y);
+        // Positionne le corps du serpent à la suite du serpent
+        corps.setX(listAncienPos.get(sizeSnake - 2).get(0));
+        corps.setY(listAncienPos.get(sizeSnake - 2).get(1));
+
+        // Ajoute le corps a la liste et place le corps après à la suite
+        listBodySnake.add(corps);
 
     }
+
 
     /**
      * Fonction de déplacement du serpent
      */
     public void moveSnake() {
 
-        mangerPomme();
+        // Contrôle de la tête avec le curseur de gravité
+        switch (directionActuel) {
+            case DROITE:
+                changerOrientationSerpent(Direction.DROITE);
+                deplacementPreced = Direction.DROITE;
+                break;
 
-        if (bas) {
-            changerOrientationSerpent(Direction.BAS);
-            deplacementPreced = Direction.BAS;
+            case BAS:
+                changerOrientationSerpent(Direction.BAS);
+                deplacementPreced = Direction.BAS;
+                break;
 
-        } else if (haut) {
-            changerOrientationSerpent(Direction.HAUT);
-            deplacementPreced = Direction.HAUT;
+            case HAUT:
+                changerOrientationSerpent(Direction.HAUT);
+                deplacementPreced = Direction.HAUT;
+                break;
 
-        } else if (gauche) {
-            changerOrientationSerpent(Direction.GAUCHE);
-            deplacementPreced = Direction.GAUCHE;
-
-        } else if (droite) {
-            changerOrientationSerpent(Direction.DROITE);
-            deplacementPreced = Direction.DROITE;
+            case GAUCHE:
+                changerOrientationSerpent(Direction.GAUCHE);
+                deplacementPreced = Direction.GAUCHE;
+                break;
         }
 
+        ArrayList<ArrayList<Integer>> oldPos = listAncienPos;
+        for (int i = 0; i < listBodySnake.size(); i++) {
+            if (i > 0) {
+                // i - 1 pour avoir la position du corps devant quand
+                // ce n'est pas la tête du serpent
+                listBodySnake.get(i).setX(oldPos.get(i - 1).get(0));
+                listBodySnake.get(i).setY(oldPos.get(i - 1).get(1));
+            }
+
+        }
+
+    }
+
+    /***
+     * Fonction qui permet de mettre à jour la liste de liste d'ancienne
+     * position.
+     * Cette fonction est appelée dans le Run() du Handler.
+     */
+    public void ancienPos() {
+        // Reset la liste avant d'ajouter de nouvelle position
+        listAncienPos.clear();
+
+        for (int i = 0; i<listBodySnake.size();i++){
+            ArrayList<Integer> pos = new ArrayList<>();
+            pos.add((int)listBodySnake.get(i).getX());
+            pos.add((int)listBodySnake.get(i).getY());
+            listAncienPos.add(pos);
+        }
     }
 
 }
