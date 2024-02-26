@@ -130,7 +130,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 ancienPos();
 
                 if (collisionSurSerpent()) {
-                    System.out.println("---------------------------------------------------------------------------------------");
                     stopHandler();
                 }
 
@@ -256,15 +255,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         switch (direction) {
             case HAUT:
                 deplacementTop = -LARGEUR_CELL;
+                snakeHeadImg.setImageResource(R.drawable.head_up);
                 break;
             case BAS:
                 deplacementTop = LARGEUR_CELL;
+                snakeHeadImg.setImageResource(R.drawable.head_down);
                 break;
             case GAUCHE:
                 deplacementLeft = -HAUTEUR_CELL;
+                snakeHeadImg.setImageResource(R.drawable.head_left);
                 break;
             case DROITE:
                 deplacementLeft = HAUTEUR_CELL;
+                snakeHeadImg.setImageResource(R.drawable.head_right);
                 break;
         }
 
@@ -414,21 +417,25 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
 
+    /***
+     * Fonction qui permet de tester si le serpent collisionne
+     * son propre corps
+     * @return True si le serpent se collisionne lui meme sinon False
+     */
     public boolean collisionSurSerpent() {
-        // si la position de la tete du serpent est déjà present dans
-        // la liste de position
 
-        // Position de la tête du serpent
+        // Position de la tête du serpent mis dans une liste
         ArrayList<Integer> posSnakeHead = new ArrayList<>();
         posSnakeHead.add((int)snakeHeadImg.getX());
         posSnakeHead.add((int)snakeHeadImg.getY());
 
+        // Test si la position de la tête
         for (int i = 0; i < listAncienPos.size(); i++) {
             if (i != 0) {
-                System.out.println(i + "-" + listAncienPos.get(i));
-                System.out.println("Tete :" + posSnakeHead);
+//                System.out.println(i + "-" + listAncienPos.get(i));
+//                System.out.println("Tete :" + posSnakeHead);
                 if (posSnakeHead.equals(listAncienPos.get(i))) {
-                    System.out.println("fin");
+                    System.out.println("-------------------------------------------------------------------------------------");
                     return true;
                 }
             }
