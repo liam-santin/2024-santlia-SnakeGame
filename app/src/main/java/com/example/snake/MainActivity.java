@@ -100,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         gravitySensor = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
         snakeHeadImg = findViewById(R.id.snakeImg);
+        snakeHeadImg.setImageResource(R.drawable.head_down);
         layoutParams = (RelativeLayout.LayoutParams) snakeHeadImg.getLayoutParams();
         pommeImage = findViewById(R.id.pommeImg);
 
@@ -338,7 +339,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         ImageView corps = new ImageView(this);
         // Set les propriétés de l'image
-        corps.setImageResource(R.drawable.body_snake);
+        corps.setImageResource(R.drawable.body_vertical);
+
         corps.setAdjustViewBounds(true);
         corps.setMaxHeight(convertDpToPx(this, 40));
         corps.setMaxWidth(convertDpToPx(this, 40));
@@ -363,6 +365,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
      */
     public void moveSnake() {
 
+        ArrayList<ArrayList<Integer>> oldPos = listAncienPos;
+        for (int i = 0; i < listBodySnake.size(); i++) {
+            if (i > 0) {
+                // i - 1 pour avoir la position du corps devant quand
+                // ce n'est pas la tête du serpent
+                listBodySnake.get(i).setX(oldPos.get(i - 1).get(0));
+                listBodySnake.get(i).setY(oldPos.get(i - 1).get(1));
+
+                setImageSnake(i);
+            }
+
+        }
 
         // Contrôle de la tête avec le curseur de gravité
         switch (directionActuel) {
@@ -387,15 +401,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 break;
         }
 
-        ArrayList<ArrayList<Integer>> oldPos = listAncienPos;
-        for (int i = 0; i < listBodySnake.size(); i++) {
-            if (i > 0) {
-                // i - 1 pour avoir la position du corps devant quand
-                // ce n'est pas la tête du serpent
-                listBodySnake.get(i).setX(oldPos.get(i - 1).get(0));
-                listBodySnake.get(i).setY(oldPos.get(i - 1).get(1));
-            }
-        }
 
     }
 
@@ -416,6 +421,34 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
     }
 
+
+    public void setImageSnake(int i) {
+        /** Changement de l'image pour l'orientation du corps **/
+        // Axe X, déplacement horizontal
+        if (listAncienPos.get(i).get(0) > listAncienPos.get(i - 1).get(0) ||
+                listAncienPos.get(i).get(0) < listAncienPos.get(i - 1).get(0)) {
+            listBodySnake.get(i).setImageResource(R.drawable.body_horizontal);
+
+            // Axe Y, déplacement vertical
+        } else if (listAncienPos.get(i).get(1) > listAncienPos.get(i - 1).get(1)
+                || listAncienPos.get(i).get(1) < listAncienPos.get(i - 1).get(1)) {
+            listBodySnake.get(i).setImageResource(R.drawable.body_vertical);
+        }
+
+        // Dernier corps du serpent
+        if (i == listBodySnake.size() - 1) {
+            if (listAncienPos.get(i).get(0) < listAncienPos.get(i - 1).get(0)) {
+                listBodySnake.get(i).setImageResource(R.drawable.tail_left);
+            } else if (listAncienPos.get(i).get(1) < listAncienPos.get(i - 1).get(1)) {
+                listBodySnake.get(i).setImageResource(R.drawable.tail_up);
+            } else if (listAncienPos.get(i).get(0) > listAncienPos.get(i - 1).get(0)) {
+                listBodySnake.get(i).setImageResource(R.drawable.tail_right);
+            } else {
+                listBodySnake.get(i).setImageResource(R.drawable.tail_down);
+            }
+
+        }
+    }
 
     /***
      * Fonction qui permet de tester si le serpent collisionne
