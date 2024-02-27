@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.util.TypedValue;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -70,6 +71,7 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
     private SensorManager sensorManager;
     private Sensor gravitySensor;
     private CustomGridView customGridView;
+    private TextView nbrPommeText;
 
     // Position X
     ArrayList<Integer> listPosX = new ArrayList<>();
@@ -83,6 +85,8 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
     ArrayList<ArrayList<Integer>> listAncienPos = new ArrayList<>();
     // Définit la taille du serpent, au debut à 1 car il y a la tête
     int sizeSnake = 1;
+    // Score du serpent
+    int nbrPomme = 0;
 
     // Déplacer l'ImageView de 200 pixels sur l'axe x
     RelativeLayout.LayoutParams layoutParams;
@@ -100,6 +104,7 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
         snakeHeadImg.setImageResource(R.drawable.head_down);
         layoutParams = (RelativeLayout.LayoutParams) snakeHeadImg.getLayoutParams();
         pommeImage = findViewById(R.id.pommeImg);
+        nbrPommeText = findViewById(R.id.score);
 
         // Ajout des positions de l'axe X dans un tableau
         for (int i = 0; i < NBR_COLUMN; i++) {
@@ -108,6 +113,8 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
         for (int i = 0; i < NBR_ROW; i++) {
             listPosY.add(LARGEUR_CELL * i);
         }
+
+        nbrPommeText.setText(String.valueOf(nbrPomme));
 
         // Position de la pomme
         int cellWidth = GAME_WIDTH / 14;
@@ -313,6 +320,11 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
 
             // Ajout d'un corps de serpent
             ajouterCorps();
+
+            // Ajout du nombre de pomme
+            nbrPomme++;
+            nbrPommeText.setText(String.valueOf(nbrPomme));
+
 
             // Position aléatoire de la pomme
             ArrayList<Integer> randomPos = genereRandomPos();
