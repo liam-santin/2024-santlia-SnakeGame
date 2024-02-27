@@ -1,28 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/idLayout"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:orientation="vertical"
+    android:gravity="center">
 
-    <com.example.snake.CustomGridView
-        android:id="@+id/customGridView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="center_horizontal">
 
-    <ImageView
-        android:id="@+id/snakeImg"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        app:srcCompat="@drawable/snake_img" />
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Snake Game"
+            android:textSize="62dp"
+            android:layout_marginBottom="20dp"
+            android:layout_gravity="center_horizontal"/>
 
-    <ImageView
-        android:id="@+id/pommeImg"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        app:srcCompat="@drawable/pomme" />
+        <Button
+            android:id="@+id/btnJouer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Jouer"
+            android:textSize="32dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp"/>
 
-</RelativeLayout>
+        <Button
+            android:id="@+id/btnQuitter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Quitter"
+            android:textSize="32dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp"/>
+
+    </LinearLayout>
+
+</LinearLayout>

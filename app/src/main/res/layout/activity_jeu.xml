@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/idLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".JeuActivity">
+
+    <com.example.snake.CustomGridView
+        android:id="@+id/customGridView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <ImageView
+        android:id="@+id/snakeImg"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        app:srcCompat="@drawable/snake_img" />
+
+    <ImageView
+        android:id="@+id/pommeImg"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        app:srcCompat="@drawable/pomme" />
+
+    <TextView
+        android:id="@+id/score"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="100"
+        android:textSize="50dp"
+        android:background="#80C0C0C0"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentTop="true"
+        >
+    </TextView>
+
+</RelativeLayout>
