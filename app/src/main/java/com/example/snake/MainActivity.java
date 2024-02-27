@@ -37,8 +37,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                // Quitte le jeu
-                finish();
+                // Permet d'accéder au paramètre
+                Intent paramActivity = new Intent(MainActivity.this, ParamActivity.class);
+                startActivity(paramActivity);
             }
         });
     }

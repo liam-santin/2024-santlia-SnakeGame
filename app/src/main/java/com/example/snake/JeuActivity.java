@@ -1,6 +1,7 @@
 package com.example.snake;
 
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -140,6 +141,8 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
 
                 if (collisionSurSerpent()) {
                     stopHandler();
+                    Intent mainActivity = new Intent(JeuActivity.this, MainActivity.class);
+                    startActivity(mainActivity);
                 }
 
                 moveSnake();
@@ -178,6 +181,8 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
     private void stopHandler() {
         // Arrête l'exécution du Runnable
         handler.removeCallbacks(runnable);
+        Intent gameOverActivity = new Intent(JeuActivity.this, GameOverActivity.class);
+        startActivity(gameOverActivity);
         System.out.println("Fin du handler");
     }
 
@@ -213,6 +218,7 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
 
         } else {
             stopHandler();
+
         }
     }
     @Override
@@ -253,8 +259,11 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
     }
 
     /**
-     * Fonction qui permet de changer l'orientation du serpent selon l'ENUM
-     * passé en paramètre
+     * Fonction qui permet de changer la VARIABLE de direction du serpent
+     * et non sa direction directement.
+     * Cela empêche que la tête du serpent change directemen de sens avant le
+     * timer du run du "Handler".
+     * La tête du serpent change aussi de sens.
      * @param direction ENUM, direction haut,bas,gauche et droite
      */
     public void changerDeplacementSerpent(Direction direction) {
@@ -361,21 +370,10 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
         RelativeLayout containerLayout = findViewById(R.id.idLayout);
         containerLayout.addView(corps);
 
-        // Ajout de l'image d'une queue de serpent à la fin
-        // et changement de l'avant dernier corps qui devient
-        // maintenant un corps
+        // Ajout d'un corps du serpent (queue)
+        setTailSnake(sizeSnake);
 
-            // Avant dernier
 
-        corps.setImageResource(R.drawable.tail_left);
-
-//        if (listBodySnake.get(listBodySnake.size() - 1).getX() < listBodySnake.get(listBodySnake.size() - 1).getX()) {
-//            corps.setImageResource(R.drawable.tail_right);
-//        } else if(listBodySnake.get()) {
-//
-//        } else {
-//            corps.setImageResource(R.drawable.tail_left);
-//        }
         // Positionne le corps du serpent à la suite du serpent
         // -2 correspond au corps à suivre
         corps.setX(listAncienPos.get(sizeSnake - 2).get(0));
@@ -385,7 +383,6 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
         listBodySnake.add(corps);
 
     }
-
 
     /**.
      * Fonction qui permet de déplacer le serpent
@@ -432,7 +429,8 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
                 listBodySnake.get(i).setX(oldPos.get(i - 1).get(0));
                 listBodySnake.get(i).setY(oldPos.get(i - 1).get(1));
 
-                setImageSnake(i);
+                // Corps
+                setBodySnake(i);
             }
 
         }
@@ -456,7 +454,7 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
     }
 
 
-    public void setImageSnake(int i) {
+    public void setBodySnake(int i) {
         /** Changement de l'image pour l'orientation du corps **/
         // Axe X, déplacement horizontal
         if (listAncienPos.get(i).get(0) > listAncienPos.get(i - 1).get(0) ||
@@ -469,23 +467,31 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
             listBodySnake.get(i).setImageResource(R.drawable.body_vertical);
         }
 
-        // Dernier corps du serpent
+        // Queue
         setTailSnake(i);
 
     }
 
+    /***
+     * Cette fonction permet de placer l'image de la queue du serpent
+     * dans le bon sens par rapport à la route du serpent
+     * @param i Int, index de la liste du corps du serpent
+     */
     public void setTailSnake(int i) {
         if (i == listBodySnake.size() - 1) {
+            // déplacement à droite
             if (listAncienPos.get(i).get(0) < listAncienPos.get(i - 1).get(0)) {
                 listBodySnake.get(i).setImageResource(R.drawable.tail_left);
+            // Déplacement en bas
             } else if (listAncienPos.get(i).get(1) < listAncienPos.get(i - 1).get(1)) {
                 listBodySnake.get(i).setImageResource(R.drawable.tail_up);
+            // Déplacement à gauche
             } else if (listAncienPos.get(i).get(0) > listAncienPos.get(i - 1).get(0)) {
                 listBodySnake.get(i).setImageResource(R.drawable.tail_right);
+            // Déplacement en haut
             } else {
                 listBodySnake.get(i).setImageResource(R.drawable.tail_down);
             }
-
         }
     }
 
