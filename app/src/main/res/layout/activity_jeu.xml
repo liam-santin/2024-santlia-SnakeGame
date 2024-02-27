@@ -25,16 +25,28 @@
         android:layout_height="40dp"
         app:srcCompat="@drawable/pomme" />
 
-    <TextView
-        android:id="@+id/score"
+    <!-- Score du joueur -->
+    <LinearLayout
+        android:id="@+id/idLayoutScore"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:text="100"
-        android:textSize="50dp"
-        android:background="#80C0C0C0"
         android:layout_centerHorizontal="true"
         android:layout_alignParentTop="true"
-        >
-    </TextView>
+        android:background="#80C0C0C0">
+
+        <TextView
+            android:id="@+id/score"
+            android:layout_height="60dp"
+            android:layout_width="80dp"
+            android:textAlignment="center"
+            android:text="100"
+            android:textSize="50dp"/>
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/pomme"
+            android:layout_gravity="center_vertical|end"/>
+
+    </LinearLayout>
 
 </RelativeLayout>

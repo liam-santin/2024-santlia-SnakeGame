@@ -1,7 +1,6 @@
 package com.example.snake;
 
 import android.content.Context;
-import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -10,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.TypedValue;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -72,6 +72,7 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
     private Sensor gravitySensor;
     private CustomGridView customGridView;
     private TextView nbrPommeText;
+    private LinearLayout layoutScore;
 
     // Position X
     ArrayList<Integer> listPosX = new ArrayList<>();
@@ -105,6 +106,7 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
         layoutParams = (RelativeLayout.LayoutParams) snakeHeadImg.getLayoutParams();
         pommeImage = findViewById(R.id.pommeImg);
         nbrPommeText = findViewById(R.id.score);
+        layoutScore = findViewById(R.id.idLayoutScore);
 
         // Ajout des positions de l'axe X dans un tableau
         for (int i = 0; i < NBR_COLUMN; i++) {
@@ -115,6 +117,8 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
         }
 
         nbrPommeText.setText(String.valueOf(nbrPomme));
+        nbrPommeText.bringToFront();
+        layoutScore.bringToFront();
 
         // Position de la pomme
         int cellWidth = GAME_WIDTH / 14;
@@ -253,7 +257,7 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
      * passé en paramètre
      * @param direction ENUM, direction haut,bas,gauche et droite
      */
-    public void changerOrientationSerpent(Direction direction) {
+    public void changerDeplacementSerpent(Direction direction) {
         int deplacementTop = 0;
         int deplacementLeft = 0;
 
@@ -348,7 +352,6 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
 
         ImageView corps = new ImageView(this);
         // Set les propriétés de l'image
-        corps.setImageResource(R.drawable.body_vertical);
 
         corps.setAdjustViewBounds(true);
         corps.setMaxHeight(convertDpToPx(this, 40));
@@ -358,6 +361,21 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
         RelativeLayout containerLayout = findViewById(R.id.idLayout);
         containerLayout.addView(corps);
 
+        // Ajout de l'image d'une queue de serpent à la fin
+        // et changement de l'avant dernier corps qui devient
+        // maintenant un corps
+
+            // Avant dernier
+
+        corps.setImageResource(R.drawable.tail_left);
+
+//        if (listBodySnake.get(listBodySnake.size() - 1).getX() < listBodySnake.get(listBodySnake.size() - 1).getX()) {
+//            corps.setImageResource(R.drawable.tail_right);
+//        } else if(listBodySnake.get()) {
+//
+//        } else {
+//            corps.setImageResource(R.drawable.tail_left);
+//        }
         // Positionne le corps du serpent à la suite du serpent
         // -2 correspond au corps à suivre
         corps.setX(listAncienPos.get(sizeSnake - 2).get(0));
@@ -369,11 +387,43 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
     }
 
 
-    /**
-     * Fonction de déplacement du serpent
+    /**.
+     * Fonction qui permet de déplacer le serpent
      */
     public void moveSnake() {
 
+        faireSuivreCorpsSerpent();
+
+        // Changement de direction de la tête du serpent
+        switch (directionActuel) {
+            case DROITE:
+                changerDeplacementSerpent(Direction.DROITE);
+                deplacementPreced = Direction.DROITE;
+                break;
+
+            case BAS:
+                changerDeplacementSerpent(Direction.BAS);
+                deplacementPreced = Direction.BAS;
+                break;
+
+            case HAUT:
+                changerDeplacementSerpent(Direction.HAUT);
+                deplacementPreced = Direction.HAUT;
+                break;
+
+            case GAUCHE:
+                changerDeplacementSerpent(Direction.GAUCHE);
+                deplacementPreced = Direction.GAUCHE;
+                break;
+        }
+
+    }
+
+    /***
+     * Cette fonction permet de faire que les corps se suivent entre eux
+     * et suivent la tête du serpent
+     */
+    public void faireSuivreCorpsSerpent() {
         ArrayList<ArrayList<Integer>> oldPos = listAncienPos;
         for (int i = 0; i < listBodySnake.size(); i++) {
             if (i > 0) {
@@ -386,31 +436,6 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
             }
 
         }
-
-        // Contrôle de la tête avec le curseur de gravité
-        switch (directionActuel) {
-            case DROITE:
-                changerOrientationSerpent(Direction.DROITE);
-                deplacementPreced = Direction.DROITE;
-                break;
-
-            case BAS:
-                changerOrientationSerpent(Direction.BAS);
-                deplacementPreced = Direction.BAS;
-                break;
-
-            case HAUT:
-                changerOrientationSerpent(Direction.HAUT);
-                deplacementPreced = Direction.HAUT;
-                break;
-
-            case GAUCHE:
-                changerOrientationSerpent(Direction.GAUCHE);
-                deplacementPreced = Direction.GAUCHE;
-                break;
-        }
-
-
     }
 
     /***
@@ -445,6 +470,11 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
         }
 
         // Dernier corps du serpent
+        setTailSnake(i);
+
+    }
+
+    public void setTailSnake(int i) {
         if (i == listBodySnake.size() - 1) {
             if (listAncienPos.get(i).get(0) < listAncienPos.get(i - 1).get(0)) {
                 listBodySnake.get(i).setImageResource(R.drawable.tail_left);
@@ -471,18 +501,15 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
         posSnakeHead.add((int)snakeHeadImg.getX());
         posSnakeHead.add((int)snakeHeadImg.getY());
 
-        // Test si la position de la tête
+        // Test si la tête fonce dans son corps en regardant si elle est
+        // sur une position de la liste
         for (int i = 0; i < listAncienPos.size(); i++) {
             if (i != 0) {
-//                System.out.println(i + "-" + listAncienPos.get(i));
-//                System.out.println("Tete :" + posSnakeHead);
                 if (posSnakeHead.equals(listAncienPos.get(i))) {
-                    System.out.println("-------------------------------------------------------------------------------------");
                     return true;
                 }
             }
         }
-
         return false;
     }
 

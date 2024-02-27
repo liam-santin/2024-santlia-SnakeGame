@@ -1,15 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center">
 
+    <!-- Image de fond -->
+    <ImageView
+        android:id="@+id/backgroundImageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/fond_ecran_accueil"
+        android:alpha="0.5"/>
+
+    <!-- Titre et bouton -->
     <LinearLayout
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:orientation="vertical"
-        android:layout_gravity="center_horizontal">
+        android:layout_gravity="center_horizontal"
+        android:layout_centerInParent="true">
 
         <TextView
             android:id="@+id/textView"
@@ -17,27 +28,53 @@
             android:layout_height="wrap_content"
             android:text="Snake Game"
             android:textSize="62dp"
+            android:textStyle="bold"
             android:layout_marginBottom="20dp"
             android:layout_gravity="center_horizontal"/>
 
         <Button
             android:id="@+id/btnJouer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="200dp"
+            android:layout_height="70dp"
             android:text="Jouer"
             android:textSize="32dp"
+            android:backgroundTint="@color/red"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="16dp"/>
 
         <Button
             android:id="@+id/btnQuitter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="150dp"
+            android:layout_height="60dp"
             android:text="Quitter"
-            android:textSize="32dp"
+            android:textSize="24dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="16dp"/>
-
     </LinearLayout>
 
-</LinearLayout>
+
+    <!-- Crédit -->
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:orientation="vertical"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="20dp">
+        <TextView
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:text="Créer par Liam Santin"
+            android:textSize="16dp"/>
+        <TextView
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:text="v.1"
+            android:textAlignment="center"
+            android:textSize="16dp"/>
+    </LinearLayout>
+
+
+
+
+</RelativeLayout>

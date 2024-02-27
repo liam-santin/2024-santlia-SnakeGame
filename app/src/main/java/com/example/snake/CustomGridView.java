@@ -11,6 +11,9 @@ public class CustomGridView extends View {
     private static final int NBR_COLUMNS = 14;
     private static final int NBR_ROWS = 6;
 
+    // Couleurs pour l'alternance
+    private int color1 = Color.parseColor("#00FF00"); // Vert
+    private int color2 = Color.parseColor("#00CC00"); // Un autre vert
 
     // Largeur et hauteur du cadrillage
     private int width = 1420;
@@ -43,16 +46,30 @@ public class CustomGridView extends View {
         int cellWidth = width / NBR_COLUMNS;
         int cellHeight = height / NBR_ROWS;
 
-        // Dessiner les lignes verticales
-        for (int col = 1; col < NBR_COLUMNS; col++) {
-            int x = col * cellWidth;
-            canvas.drawLine(x, 0, x, height, gridPaint);
+        // Variable pour alterner entre les couleurs
+        int colorIndex = 0;
+
+        // Dessiner les cases
+        for (int row = 0; row < NBR_ROWS; row++) {
+            for (int col = 0; col < NBR_COLUMNS; col++) {
+                int x = col * cellWidth;
+                int y = row * cellHeight;
+
+                // Sélectionner la couleur en alternance en fonction de la position de la case
+                int color;
+                if ((row + col) % 2 == 0) {
+                    color = color1;
+                } else {
+                    color = color2;
+                }
+
+                // Dessiner la case avec la couleur appropriée
+                Paint cellPaint = new Paint();
+                cellPaint.setStyle(Paint.Style.FILL);
+                cellPaint.setColor(color);
+                canvas.drawRect(x, y, x + cellWidth, y + cellHeight, cellPaint);
+            }
         }
 
-        // Dessiner les lignes horizontales
-        for (int row = 1; row < NBR_ROWS; row++) {
-            int y = row * cellHeight;
-            canvas.drawLine(0, y, width, y, gridPaint);
-        }
     }
 }
