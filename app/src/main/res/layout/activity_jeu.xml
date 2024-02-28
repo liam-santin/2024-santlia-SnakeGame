@@ -39,12 +39,13 @@
             android:layout_height="60dp"
             android:layout_width="80dp"
             android:textAlignment="center"
-            android:text="100"
+            android:textStyle="bold"
             android:textSize="50dp"/>
         <ImageView
             android:id="@+id/imgFruitScore"
             android:layout_width="30dp"
             android:layout_height="30dp"
+            android:layout_marginLeft="20dp"
             android:src="@drawable/pomme"
             android:layout_gravity="center_vertical|end"/>
 

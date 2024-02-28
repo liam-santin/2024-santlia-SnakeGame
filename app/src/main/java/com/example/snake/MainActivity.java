@@ -9,19 +9,20 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
     private Button btnJouer;
-    private Button btnQuitter;
+    private Button btnParam;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         btnJouer = findViewById(R.id.btnJouer);
-        btnQuitter = findViewById(R.id.btnQuitter);
+        btnParam = findViewById(R.id.btnQuitter);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+
 
         btnJouer.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -33,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        btnQuitter.setOnClickListener(new View.OnClickListener() {
+        btnParam.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 

@@ -245,9 +245,9 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
         imgFruit.setY(randomPos.get(1));
 
         switch (FRUIT) {
-            case 1: imgFruitScore.setImageResource(R.drawable.pomme);
+            case 1: imgFruit.setImageResource(R.drawable.pomme);
                 break;
-            case 2: imgFruitScore.setImageResource(R.drawable.fraise);
+            case 2: imgFruit.setImageResource(R.drawable.fraise);
                 break;
             case 3: imgFruit.setImageResource(R.drawable.banane);
                 break;
@@ -278,17 +278,14 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
         layoutScore.bringToFront();
 
         switch (FRUIT) {
-            case 1: imgFruit.setImageResource(R.drawable.pomme);
-                    imgFruitScore.setImageResource(R.drawable.pomme);
+            case 1: imgFruitScore.setImageResource(R.drawable.pomme);
                 break;
-            case 2: imgFruit.setImageResource(R.drawable.fraise);
-                    imgFruitScore.setImageResource(R.drawable.fraise);
+            case 2: imgFruitScore.setImageResource(R.drawable.fraise);
                 break;
-            case 3: imgFruit.setImageResource(R.drawable.banane);
-                    imgFruitScore.setImageResource(R.drawable.banane);
+            case 3: imgFruitScore.setImageResource(R.drawable.banane);
                 break;
         }
-        nbrFruitText.bringToFront();
+        nbrFruitText.setZ(0);
     }
 
     /***
@@ -416,16 +413,13 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
         // Set les propriétés de l'image
 
         corps.setAdjustViewBounds(true);
-        corps.setMaxHeight(convertDpToPx(this, 40));
-        corps.setMaxWidth(convertDpToPx(this, 40));
-        corps.setMinimumWidth(convertDpToPx(this, 40));
-        corps.setMinimumHeight(convertDpToPx(this, 40));
+        corps.setMaxHeight(convertDpToPx(this, 60));
+        corps.setMaxWidth(convertDpToPx(this, 60));
+        corps.setMinimumWidth(convertDpToPx(this, 60));
+        corps.setMinimumHeight(convertDpToPx(this, 60));
         RelativeLayout containerLayout = findViewById(R.id.idLayout);
+        corps.setZ(1);
         containerLayout.addView(corps);
-
-        // Ajout d'un corps du serpent (queue)
-        setTailSnake(sizeSnake);
-
 
         // Positionne le corps du serpent à la suite du serpent
         // -2 correspond au corps à suivre
@@ -434,6 +428,9 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
 
         // Ajoute le corps a la liste et place le corps après à la suite
         snakeList.add(corps);
+
+        // Ajout d'un corps du serpent (queue)
+        setTailSnake(sizeSnake);
 
     }
 
@@ -466,6 +463,8 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
                 deplacementPreced = Direction.GAUCHE;
                 break;
         }
+
+
 
     }
 

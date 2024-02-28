@@ -25,6 +25,7 @@ public class GameOverActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
+        // Relance une partie
         btnRejouer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -33,6 +34,7 @@ public class GameOverActivity extends AppCompatActivity {
             }
         });
 
+        // Navigue jusqu'a l'interface du départ
         btnMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

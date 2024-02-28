@@ -26,6 +26,9 @@ public class ParamActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
+        // Par défaut, le fruit choisi est la pomme
+        fruitChoisi.setImageResource(R.drawable.pomme);
+
         // Clique sur l'image de la pomme
         imgPomme.setOnClickListener(new View.OnClickListener() {
             @Override
