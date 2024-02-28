@@ -53,6 +53,8 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
     private final int MAX_HEIGHT = 6 * 100;
     private final int MAX_WIDTH = 1313;
     private final double SENSIBILITY_SENSOR = 3;
+    // 1 = pomme, 2 = fraise, 3 = banane
+    public static int FRUIT = 0;
 
     // Déplacement
     private int VITESSE_SNAKE = 350 ;
@@ -68,7 +70,7 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
     private Handler handler;
     private Runnable runnable;
     private ImageView snakeHeadImg;
-    private ImageView pommeImage;
+    private ImageView imgFruit;
     private SensorManager sensorManager;
     private Sensor gravitySensor;
     private CustomGridView customGridView;
@@ -105,9 +107,19 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
         snakeHeadImg = findViewById(R.id.snakeImg);
         snakeHeadImg.setImageResource(R.drawable.head_down);
         layoutParams = (RelativeLayout.LayoutParams) snakeHeadImg.getLayoutParams();
-        pommeImage = findViewById(R.id.pommeImg);
+        imgFruit = findViewById(R.id.pommeImg);
         nbrPommeText = findViewById(R.id.score);
         layoutScore = findViewById(R.id.idLayoutScore);
+
+        // Set du fruit à manger
+        switch (FRUIT) {
+            case 1: imgFruit.setImageResource(R.drawable.pomme);
+            break;
+            case 2: imgFruit.setImageResource(R.drawable.fraise);
+            break;
+            case 3: imgFruit.setImageResource(R.drawable.banane);
+            break;
+        }
 
         // Ajout des positions de l'axe X dans un tableau
         for (int i = 0; i < NBR_COLUMN; i++) {
@@ -124,8 +136,8 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
         // Position de la pomme
         int cellWidth = GAME_WIDTH / 14;
         int cellHeight = GAME_HEIGHT / 6;
-        pommeImage.setX(cellWidth * 3);
-        pommeImage.setY(cellHeight * 3);
+        imgFruit.setX(cellWidth * 3);
+        imgFruit.setY(cellHeight * 3);
 
         customGridView = new CustomGridView(this);
 
@@ -326,7 +338,7 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
      */
     public void mangerPomme() {
         // Si le serpent est dessus la pomme
-        if ((pommeImage.getY() == snakeHeadImg.getY()) && (pommeImage.getX() == snakeHeadImg.getX())){
+        if ((imgFruit.getY() == snakeHeadImg.getY()) && (imgFruit.getX() == snakeHeadImg.getX())){
             System.out.println("Pomme mangée");
 
             // Ajout d'un corps de serpent
@@ -339,8 +351,8 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
 
             // Position aléatoire de la pomme
             ArrayList<Integer> randomPos = genereRandomPos();
-            pommeImage.setX(randomPos.get(0));
-            pommeImage.setY(randomPos.get(1));
+            imgFruit.setX(randomPos.get(0));
+            imgFruit.setY(randomPos.get(1));
 
             // Augmente la vitesse du serpent de 10
             VITESSE_SNAKE -= 10;

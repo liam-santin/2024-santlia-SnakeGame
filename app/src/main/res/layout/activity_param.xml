@@ -22,13 +22,28 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <TextView
-            android:layout_width="match_parent"
+        <!-- fruit choisi -->
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Choisissez un fruit "
-            android:textSize="26dp"
-            android:layout_marginLeft="20dp"/>
+            android:orientation="horizontal">
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Choisissez un fruit "
+                android:textSize="26dp"
+                android:layout_marginLeft="20dp"/>
+
+            <ImageView
+                android:id="@+id/fruitChoisi"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/banane"/>
+        </LinearLayout>
+
+
+        <!-- Choix de fruit -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
