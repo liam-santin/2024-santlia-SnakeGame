@@ -78,7 +78,8 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
     private SensorManager sensorManager;
     private Sensor gravitySensor;
     private CustomGridView customGridView;
-    private TextView nbrPommeText;
+    private TextView nbrFruitText;
+    private ImageView imgFruitScore;
     private LinearLayout layoutScore;
 
     // Position X
@@ -110,14 +111,17 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
         gravitySensor = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
         snakeHeadImg = findViewById(R.id.snakeImg);
         snakeHeadImg.setImageResource(R.drawable.head_down);
+        snakeHeadImg.bringToFront();
         layoutParams = (RelativeLayout.LayoutParams) snakeHeadImg.getLayoutParams();
         imgFruit = findViewById(R.id.pommeImg);
-        nbrPommeText = findViewById(R.id.score);
+        nbrFruitText = findViewById(R.id.score);
         layoutScore = findViewById(R.id.idLayoutScore);
+        imgFruitScore = findViewById(R.id.imgFruitScore);
 
-
-        setFruit();
         setPosXandY();
+        // Place le fruit à une position aléatoire
+        setFruit();
+
         setScore();
 
         // Défini la grille à l'écran
@@ -234,18 +238,22 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
      * Fonction qui défini l'image du fruit que l'utilisateur à choisi
      */
     public void setFruit() {
+
+        ArrayList<Integer> randomPos = genereRandomPos();
+        System.out.println(randomPos);
+        imgFruit.setX(randomPos.get(0));
+        imgFruit.setY(randomPos.get(1));
+
         switch (FRUIT) {
-            case 1: imgFruit.setImageResource(R.drawable.pomme);
+            case 1: imgFruitScore.setImageResource(R.drawable.pomme);
                 break;
-            case 2: imgFruit.setImageResource(R.drawable.fraise);
+            case 2: imgFruitScore.setImageResource(R.drawable.fraise);
                 break;
             case 3: imgFruit.setImageResource(R.drawable.banane);
                 break;
         }
 
-        // Place le fruit à une position aléatoire
-        imgFruit.setX(genereRandomPos().get(0));
-        imgFruit.setY(genereRandomPos().get(1));
+
     }
 
     /***
@@ -265,9 +273,22 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
      * Fonction qui défini le nombre de pomme mangée au début de la partie
      */
     public void setScore() {
-        nbrPommeText.setText(String.valueOf(nbrPomme));
-        nbrPommeText.bringToFront();
+        nbrFruitText.setText(String.valueOf(nbrPomme));
+
         layoutScore.bringToFront();
+
+        switch (FRUIT) {
+            case 1: imgFruit.setImageResource(R.drawable.pomme);
+                    imgFruitScore.setImageResource(R.drawable.pomme);
+                break;
+            case 2: imgFruit.setImageResource(R.drawable.fraise);
+                    imgFruitScore.setImageResource(R.drawable.fraise);
+                break;
+            case 3: imgFruit.setImageResource(R.drawable.banane);
+                    imgFruitScore.setImageResource(R.drawable.banane);
+                break;
+        }
+        nbrFruitText.bringToFront();
     }
 
     /***
@@ -354,7 +375,6 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
 
 
         return posAleatoire;
-
     }
 
     /***
@@ -369,9 +389,9 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
             // Ajout d'un corps de serpent
             ajouterCorps();
 
-            // Ajout du nombre de pomme
+            // Incrémentation du nombre de pomme
             nbrPomme++;
-            nbrPommeText.setText(String.valueOf(nbrPomme));
+            nbrFruitText.setText(String.valueOf(nbrPomme));
 
 
             // Position aléatoire de la pomme
@@ -385,11 +405,9 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
         }
     }
 
-
     /***
-     * Fonction qui ajoute un corps au serpent (ImageView)
-     * @param x Int, position X du corps à suivre
-     * @param y Int, position Y du corps à suivre
+     * Fonction qui ajoute un corps au serpent.
+     * Le corps est une image de type ImageView.
      */
     public void ajouterCorps() {
         sizeSnake++;
