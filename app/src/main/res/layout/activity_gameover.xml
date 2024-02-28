@@ -26,8 +26,9 @@
             android:layout_height="wrap_content"
             android:text="Vous avez perdu !"
             android:textSize="24dp"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="14dp"
             android:layout_gravity="center_horizontal"/>
+
 
         <Button
             android:id="@+id/btnRejouer"
@@ -35,11 +36,12 @@
             android:layout_height="70dp"
             android:text="Rejouer"
             android:textSize="28dp"
-            android:backgroundTint="@color/red"
+            android:backgroundTint="@color/green"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="16dp"/>
 
         <Button
+            style="?attr/materialButtonOutlinedStyle"
             android:id="@+id/btnMenu"
             android:layout_width="200dp"
             android:layout_height="70dp"

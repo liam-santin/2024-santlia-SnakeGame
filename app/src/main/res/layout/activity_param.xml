@@ -1,17 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="30dp"
         android:text="Paramètre"
         android:textSize="62dp"
-        android:textStyle="bold"
-        android:layout_gravity="center_horizontal"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"/>
+        android:textStyle="bold" />
 
-</RelativeLayout>
+
+    <!-- Choisir un fruit -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Choisissez un fruit "
+            android:textSize="26dp"
+            android:layout_marginLeft="20dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal">
+
+
+
+            <ImageView
+                android:id="@+id/imgPomme"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_gravity="center"
+                android:src="@drawable/pomme"
+                android:scaleType="centerInside"
+                android:layout_margin="10dp"
+                android:contentDescription="Pomme" />
+
+            <ImageView
+                android:id="@+id/imgFraise"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/fraise"
+                android:scaleType="centerInside"
+                android:layout_margin="10dp"
+                android:contentDescription="Fraise" />
+
+
+            <ImageView
+                android:id="@+id/imgBanane"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/banane"
+                android:scaleType="centerInside"
+                android:layout_margin="10dp"
+                android:contentDescription="Banane" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+
+</LinearLayout>

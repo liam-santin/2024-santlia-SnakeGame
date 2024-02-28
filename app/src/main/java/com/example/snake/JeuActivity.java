@@ -141,8 +141,6 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
 
                 if (collisionSurSerpent()) {
                     stopHandler();
-                    Intent mainActivity = new Intent(JeuActivity.this, MainActivity.class);
-                    startActivity(mainActivity);
                 }
 
                 moveSnake();

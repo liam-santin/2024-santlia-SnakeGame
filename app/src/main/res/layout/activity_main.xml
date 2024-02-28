@@ -38,18 +38,18 @@
             android:layout_height="70dp"
             android:text="Jouer"
             android:textSize="32dp"
-            android:backgroundTint="@color/red"
+            android:backgroundTint="@color/green"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="16dp"/>
 
         <Button
             android:id="@+id/btnQuitter"
-            android:layout_width="180dp"
-            android:layout_height="60dp"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="16dp"
-            android:text="Paramètre"
-            android:textSize="24dp" />
+            android:text="Paramètres"
+            android:textSize="32dp" />
     </LinearLayout>
 
 
