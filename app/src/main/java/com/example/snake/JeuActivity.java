@@ -40,6 +40,10 @@ import java.util.Random;
  *  Liste de position Y : [0, 113, 226, 339, 452, 565]
  *
  *  Taille de l'écran 1420x680
+ *
+ *  Largeur d'une cellule (cellWidth)  = GAME_WIDTH / 14
+ *  Hauteur d'une cellule (cellHeight) = GAME_HEIGHT / 6
+ *
  */
 public class JeuActivity extends AppCompatActivity implements SensorEventListener {
 
@@ -84,7 +88,7 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
 
     /** SERPENT **/
     // Liste de corps de serpent
-    ArrayList<ImageView> listBodySnake = new ArrayList<>();
+    ArrayList<ImageView> snakeList = new ArrayList<>();
     // Position X et Y du dernier corps à suivre
     ArrayList<ArrayList<Integer>> listAncienPos = new ArrayList<>();
     // Définit la taille du serpent, au debut à 1 car il y a la tête
@@ -101,7 +105,7 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_jeu);
 
-        // Récupère les valeurs
+        // Récupère et set les valeurs
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         gravitySensor = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
         snakeHeadImg = findViewById(R.id.snakeImg);
@@ -111,37 +115,16 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
         nbrPommeText = findViewById(R.id.score);
         layoutScore = findViewById(R.id.idLayoutScore);
 
-        // Set du fruit à manger
-        switch (FRUIT) {
-            case 1: imgFruit.setImageResource(R.drawable.pomme);
-            break;
-            case 2: imgFruit.setImageResource(R.drawable.fraise);
-            break;
-            case 3: imgFruit.setImageResource(R.drawable.banane);
-            break;
-        }
 
-        // Ajout des positions de l'axe X dans un tableau
-        for (int i = 0; i < NBR_COLUMN; i++) {
-            listPosX.add(HAUTEUR_CELL * i);
-        }
-        for (int i = 0; i < NBR_ROW; i++) {
-            listPosY.add(LARGEUR_CELL * i);
-        }
+        setFruit();
+        setPosXandY();
+        setScore();
 
-        nbrPommeText.setText(String.valueOf(nbrPomme));
-        nbrPommeText.bringToFront();
-        layoutScore.bringToFront();
-
-        // Position de la pomme
-        int cellWidth = GAME_WIDTH / 14;
-        int cellHeight = GAME_HEIGHT / 6;
-        imgFruit.setX(cellWidth * 3);
-        imgFruit.setY(cellHeight * 3);
-
+        // Défini la grille à l'écran
         customGridView = new CustomGridView(this);
 
-        listBodySnake.add(snakeHeadImg);
+        // Ajout de la tête dans la liste de
+        snakeList.add(snakeHeadImg);
 
         // Initialisation du handler
         handler = new Handler();
@@ -247,6 +230,46 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
     }
 
 
+    /**
+     * Fonction qui défini l'image du fruit que l'utilisateur à choisi
+     */
+    public void setFruit() {
+        switch (FRUIT) {
+            case 1: imgFruit.setImageResource(R.drawable.pomme);
+                break;
+            case 2: imgFruit.setImageResource(R.drawable.fraise);
+                break;
+            case 3: imgFruit.setImageResource(R.drawable.banane);
+                break;
+        }
+
+        // Place le fruit à une position aléatoire
+        imgFruit.setX(genereRandomPos().get(0));
+        imgFruit.setY(genereRandomPos().get(1));
+    }
+
+    /***
+     * Fonction qui défini les positions des cases de l'axe X et Y
+     * dans leur liste
+     */
+    public void setPosXandY() {
+        for (int i = 0; i < NBR_COLUMN; i++) {
+            listPosX.add(HAUTEUR_CELL * i);
+        }
+        for (int i = 0; i < NBR_ROW; i++) {
+            listPosY.add(LARGEUR_CELL * i);
+        }
+    }
+
+    /***
+     * Fonction qui défini le nombre de pomme mangée au début de la partie
+     */
+    public void setScore() {
+        nbrPommeText.setText(String.valueOf(nbrPomme));
+        nbrPommeText.bringToFront();
+        layoutScore.bringToFront();
+    }
+
     /***
      * Fonction qui permet de tester si le serpent est en bord de scene
      * ou non
@@ -329,7 +352,9 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
         } while(!listPosY.contains(randomPosY));
         posAleatoire.add(randomPosY);
 
+
         return posAleatoire;
+
     }
 
     /***
@@ -390,7 +415,7 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
         corps.setY(listAncienPos.get(sizeSnake - 2).get(1));
 
         // Ajoute le corps a la liste et place le corps après à la suite
-        listBodySnake.add(corps);
+        snakeList.add(corps);
 
     }
 
@@ -432,12 +457,12 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
      */
     public void faireSuivreCorpsSerpent() {
         ArrayList<ArrayList<Integer>> oldPos = listAncienPos;
-        for (int i = 0; i < listBodySnake.size(); i++) {
+        for (int i = 0; i < snakeList.size(); i++) {
             if (i > 0) {
                 // i - 1 pour avoir la position du corps devant quand
                 // ce n'est pas la tête du serpent
-                listBodySnake.get(i).setX(oldPos.get(i - 1).get(0));
-                listBodySnake.get(i).setY(oldPos.get(i - 1).get(1));
+                snakeList.get(i).setX(oldPos.get(i - 1).get(0));
+                snakeList.get(i).setY(oldPos.get(i - 1).get(1));
 
                 // Corps
                 setBodySnake(i);
@@ -455,10 +480,12 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
         // Reset la liste avant d'ajouter de nouvelle position
         listAncienPos.clear();
 
-        for (int i = 0; i<listBodySnake.size();i++){
+        // Ajoute les positions de chaque corps ainsi que le tête
+        // dans la liste
+        for (int i = 0; i< snakeList.size(); i++){
             ArrayList<Integer> pos = new ArrayList<>();
-            pos.add((int)listBodySnake.get(i).getX());
-            pos.add((int)listBodySnake.get(i).getY());
+            pos.add((int) snakeList.get(i).getX());
+            pos.add((int) snakeList.get(i).getY());
             listAncienPos.add(pos);
         }
     }
@@ -469,12 +496,12 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
         // Axe X, déplacement horizontal
         if (listAncienPos.get(i).get(0) > listAncienPos.get(i - 1).get(0) ||
                 listAncienPos.get(i).get(0) < listAncienPos.get(i - 1).get(0)) {
-            listBodySnake.get(i).setImageResource(R.drawable.body_horizontal);
+            snakeList.get(i).setImageResource(R.drawable.body_horizontal);
 
             // Axe Y, déplacement vertical
         } else if (listAncienPos.get(i).get(1) > listAncienPos.get(i - 1).get(1)
                 || listAncienPos.get(i).get(1) < listAncienPos.get(i - 1).get(1)) {
-            listBodySnake.get(i).setImageResource(R.drawable.body_vertical);
+            snakeList.get(i).setImageResource(R.drawable.body_vertical);
         }
 
         // Queue
@@ -488,19 +515,19 @@ public class JeuActivity extends AppCompatActivity implements SensorEventListene
      * @param i Int, index de la liste du corps du serpent
      */
     public void setTailSnake(int i) {
-        if (i == listBodySnake.size() - 1) {
+        if (i == snakeList.size() - 1) {
             // déplacement à droite
             if (listAncienPos.get(i).get(0) < listAncienPos.get(i - 1).get(0)) {
-                listBodySnake.get(i).setImageResource(R.drawable.tail_left);
+                snakeList.get(i).setImageResource(R.drawable.tail_left);
             // Déplacement en bas
             } else if (listAncienPos.get(i).get(1) < listAncienPos.get(i - 1).get(1)) {
-                listBodySnake.get(i).setImageResource(R.drawable.tail_up);
+                snakeList.get(i).setImageResource(R.drawable.tail_up);
             // Déplacement à gauche
             } else if (listAncienPos.get(i).get(0) > listAncienPos.get(i - 1).get(0)) {
-                listBodySnake.get(i).setImageResource(R.drawable.tail_right);
+                snakeList.get(i).setImageResource(R.drawable.tail_right);
             // Déplacement en haut
             } else {
-                listBodySnake.get(i).setImageResource(R.drawable.tail_down);
+                snakeList.get(i).setImageResource(R.drawable.tail_down);
             }
         }
     }
